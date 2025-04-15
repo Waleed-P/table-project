@@ -163,6 +163,25 @@ function App() {
       handleDeleteColumn(deleteIndex.index);
     }
   };
+  const [investment, setInvestment] = useState("");
+  const [profit, setProfit] = useState("");
+  const [editingField, setEditingField] = useState<"investment" | "profit" | null>(null);
+  const [tempValue, setTempValue] = useState("");
+
+  const handleOpenEditModal = (field: "investment" | "profit") => {
+    setEditingField(field);
+    setTempValue(field === "investment" ? investment : profit);
+  };
+
+  const handleSave = () => {
+    if (editingField === "investment") {
+      setInvestment(tempValue);
+    } else if (editingField === "profit") {
+      setProfit(tempValue);
+    }
+    setEditingField(null);
+  };
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-svh gap-6 p-6">
@@ -212,7 +231,9 @@ function App() {
                   </AlertDialogTitle>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel className="text-white hover:text-gray-400">Cancel</AlertDialogCancel>
+                  <AlertDialogCancel className="text-white hover:text-gray-400">
+                    Cancel
+                  </AlertDialogCancel>
                   <AlertDialogAction onClick={handleDeleteTable}>
                     Delete
                   </AlertDialogAction>
@@ -287,6 +308,56 @@ function App() {
                 ))}
               </TableBody>
             </Table>
+            <div className="space-y-4">
+              <div className="p-3 text-[20px] font-medium space-y-2">
+                <div
+                  className="cursor-pointer hover:bg-gray-100 p-2 rounded"
+                  onClick={() => handleOpenEditModal("investment")}
+                >
+                  Total Investment : {investment}
+                </div>
+                <div
+                  className="cursor-pointer hover:bg-gray-100 p-2 rounded"
+                  onClick={() => handleOpenEditModal("profit")}
+                >
+                  Total Profit : {profit}
+                </div>
+              </div>
+
+              <Dialog
+                open={!!editingField}
+                onOpenChange={(open) => !open && setEditingField(null)}
+              >
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>
+                      Edit{" "}
+                      {editingField === "investment"
+                        ? "Total Investment"
+                        : "Total Profit"}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <Input
+                    value={tempValue}
+                    onChange={(e) => setTempValue(e.target.value)}
+                    placeholder={`Enter ${
+                      editingField === "investment"
+                        ? "investment amount"
+                        : "profit amount"
+                    }`}
+                  />
+                  <DialogFooter>
+                    <Button
+                      
+                      onClick={() => setEditingField(null)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSave}>Save</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </div>
       )}
@@ -303,7 +374,9 @@ function App() {
             </AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="text-white hover:text-gray-400">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="text-white hover:text-gray-400">
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete}>
               Delete
             </AlertDialogAction>
