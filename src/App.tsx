@@ -29,6 +29,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 type TableType = {
   headers: string[];
   data: string[][];
@@ -42,6 +43,10 @@ function App() {
   const [cols, setCols] = useState(0);
   const [headers, setHeaders] = useState<string[]>([]);
   const [tableData, setTableData] = useState<string[][]>([]);
+  const [deleteIndex, setDeleteIndex] = useState<{
+    type: "row" | "column";
+    index: number;
+  } | null>(null);
 
   // Load data
   useEffect(() => {
@@ -66,7 +71,10 @@ function App() {
   }, [headers, tableData]);
 
   const handleCreateTable = () => {
-    const newHeaders = Array.from({ length: cols }, (_, i) => `Column ${i + 1}`);
+    const newHeaders = Array.from(
+      { length: cols },
+      (_, i) => `Column ${i + 1}`
+    );
     const newData = Array.from({ length: rows }, () =>
       Array.from({ length: cols }, () => "")
     );
@@ -75,7 +83,11 @@ function App() {
     setOpen(false);
   };
 
-  const handleCellChange = (rowIndex: number, colIndex: number, value: string) => {
+  const handleCellChange = (
+    rowIndex: number,
+    colIndex: number,
+    value: string
+  ) => {
     const updated = [...tableData];
     updated[rowIndex][colIndex] = value;
     setTableData(updated);
@@ -106,6 +118,7 @@ function App() {
     updatedData.splice(index, 1);
     setTableData(updatedData);
     setRows(updatedData.length);
+    setDeleteIndex(null);
   };
 
   const handleDeleteColumn = (index: number) => {
@@ -121,6 +134,7 @@ function App() {
     setHeaders(updatedHeaders);
     setTableData(updatedData);
     setCols(updatedHeaders.length);
+    setDeleteIndex(null);
   };
 
   const handleDeleteTable = () => {
@@ -140,6 +154,15 @@ function App() {
     setTableData(blankData);
   };
 
+  const confirmDelete = () => {
+    if (!deleteIndex) return;
+
+    if (deleteIndex.type === "row") {
+      handleDeleteRow(deleteIndex.index);
+    } else {
+      handleDeleteColumn(deleteIndex.index);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-svh gap-6 p-6">
@@ -176,9 +199,7 @@ function App() {
           <div className="flex gap-4 justify-end flex-wrap">
             <Button onClick={handleAddRow}>Add Row</Button>
             <Button onClick={handleAddColumn}>Add Column</Button>
-            <Button  onClick={handleResetTable}>
-              Reset Table
-            </Button>
+            <Button onClick={handleResetTable}>Reset Table</Button>
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -186,17 +207,31 @@ function App() {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure you want to delete the table?</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    Are you sure you want to delete the table?
+                  </AlertDialogTitle>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteTable}>Delete</AlertDialogAction>
+                  <AlertDialogAction onClick={handleDeleteTable}>
+                    Delete
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto p-2 border-3">
+            <div className="mb-5">
+              <div className="p-5 text-center font-bold">
+                <h1>BUSINESS SHARES & PROFITS</h1>
+              </div>
+              <div className="font-semibold text-end flex flex-col">
+                <div>Email: alloor19@gmail.com</div>
+                <div>Contact: +91 7034220899</div>
+              </div>
+            </div>
+
             <Table>
               <TableHeader>
                 <TableRow>
@@ -212,13 +247,16 @@ function App() {
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => handleDeleteColumn(colIndex)}
+                          onClick={() =>
+                            setDeleteIndex({ type: "column", index: colIndex })
+                          }
                         >
                           ❌
                         </Button>
                       </div>
                     </TableHead>
                   ))}
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -238,7 +276,9 @@ function App() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => handleDeleteRow(rowIndex)}
+                        onClick={() =>
+                          setDeleteIndex({ type: "row", index: rowIndex })
+                        }
                       >
                         ❌
                       </Button>
@@ -250,6 +290,26 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Confirmation Dialog for Row/Column Deletion */}
+      <AlertDialog
+        open={!!deleteIndex}
+        onOpenChange={(open) => !open && setDeleteIndex(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Are you sure you want to delete this {deleteIndex?.type}?
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
