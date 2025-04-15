@@ -212,7 +212,7 @@ function App() {
                   </AlertDialogTitle>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel className="text-white hover:text-gray-400">Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={handleDeleteTable}>
                     Delete
                   </AlertDialogAction>
@@ -303,7 +303,7 @@ function App() {
             </AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="text-white hover:text-gray-400">Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete}>
               Delete
             </AlertDialogAction>
