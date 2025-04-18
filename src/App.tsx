@@ -214,6 +214,22 @@ function App() {
   
     doc.save("business-table.pdf");
   };
+  const tableContainerStyle = {
+    overflowX: 'auto',
+    width: '100%',
+    border: '3px solid',
+  };
+  
+  const tableStyle = {
+    minWidth: '100%',
+    tableLayout: 'fixed' as const,
+  };
+  
+  const cellStyle = {
+    minWidth: '250px', // Adjust this value as needed
+    width: '400px',    // Same as minWidth to maintain consistent sizing
+  };
+  
   
   return (
     <div className="flex flex-col items-center justify-center min-h-svh gap-6 p-6">
@@ -287,61 +303,63 @@ function App() {
               </div>
             </div>
 
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {headers.map((header, colIndex) => (
-                    <TableHead key={colIndex}>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          value={header}
-                          onChange={(e) =>
-                            handleHeaderChange(colIndex, e.target.value)
-                          }
-                        />
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() =>
-                            setDeleteIndex({ type: "column", index: colIndex })
-                          }
-                        >
-                          ❌
-                        </Button>
-                      </div>
-                    </TableHead>
-                  ))}
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {tableData.map((row, rowIndex) => (
-                  <TableRow key={rowIndex}>
-                    {row.map((cell, colIndex) => (
-                      <TableCell key={colIndex}>
-                        <Input
-                          value={cell}
-                          onChange={(e) =>
-                            handleCellChange(rowIndex, colIndex, e.target.value)
-                          }
-                        />
-                      </TableCell>
-                    ))}
-                    <TableCell>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() =>
-                          setDeleteIndex({ type: "row", index: rowIndex })
-                        }
-                      >
-                        ❌
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <Table style={tableStyle}>
+  <TableHeader>
+    <TableRow>
+      {headers.map((header, colIndex) => (
+        <TableHead key={colIndex} style={cellStyle}>
+          <div className="flex items-center gap-2">
+            <Input
+              value={header}
+              onChange={(e) =>
+                handleHeaderChange(colIndex, e.target.value)
+              }
+              className="w-full" // Add this to make Input fill the cell
+            />
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() =>
+                setDeleteIndex({ type: "column", index: colIndex })
+              }
+            >
+              ❌
+            </Button>
+          </div>
+        </TableHead>
+      ))}
+      <TableHead style={cellStyle}>Actions</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    {tableData.map((row, rowIndex) => (
+      <TableRow key={rowIndex}>
+        {row.map((cell, colIndex) => (
+          <TableCell key={colIndex} style={cellStyle}>
+            <Input
+              value={cell}
+              onChange={(e) =>
+                handleCellChange(rowIndex, colIndex, e.target.value)
+              }
+              className="w-full" // Add this to make Input fill the cell
+            />
+          </TableCell>
+        ))}
+        <TableCell style={cellStyle}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() =>
+              setDeleteIndex({ type: "row", index: rowIndex })
+            }
+          >
+            ❌
+          </Button>
+        </TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+</Table>
             <div className="space-y-4">
               <div className="p-3 text-[20px] font-medium space-y-2">
                 <div
