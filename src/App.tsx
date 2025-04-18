@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
 import {
   Dialog,
   DialogContent,
@@ -33,6 +36,11 @@ import {
 type TableType = {
   headers: string[];
   data: string[][];
+};
+type AutoTableDoc = jsPDF & {
+  lastAutoTable?: {
+    finalY: number;
+  };
 };
 
 const LOCAL_STORAGE_KEY = "dynamicTableData";
@@ -181,8 +189,32 @@ function App() {
     }
     setEditingField(null);
   };
-
-
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF() as AutoTableDoc;
+  
+    doc.setFontSize(16);
+    doc.text("Business Shares & Profits", 14, 20);
+  
+    doc.setFontSize(10);
+    doc.text("Email: alloor19@gmail.com", 14, 28);
+    doc.text("Contact: +91 7034220899", 14, 34);
+  
+    // Generate table
+    autoTable(doc, {
+      startY: 40,
+      head: [headers],
+      body: tableData,
+    });
+  
+    const finalY = doc.lastAutoTable?.finalY ?? 50;
+  
+    doc.setFontSize(12);
+    doc.text(`Total Investment: ${investment}`, 14, finalY + 10);
+    doc.text(`Total Profit: ${profit}`, 14, finalY + 18);
+  
+    doc.save("business-table.pdf");
+  };
+  
   return (
     <div className="flex flex-col items-center justify-center min-h-svh gap-6 p-6">
       <Dialog open={open} onOpenChange={setOpen}>
@@ -219,6 +251,8 @@ function App() {
             <Button onClick={handleAddRow}>Add Row</Button>
             <Button onClick={handleAddColumn}>Add Column</Button>
             <Button onClick={handleResetTable}>Reset Table</Button>
+            <Button onClick={handleDownloadPDF}>Download PDF</Button>
+
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
