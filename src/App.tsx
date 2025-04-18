@@ -214,11 +214,6 @@ function App() {
   
     doc.save("business-table.pdf");
   };
-  const tableContainerStyle = {
-    overflowX: 'auto',
-    width: '100%',
-    border: '3px solid',
-  };
   
   const tableStyle = {
     minWidth: '100%',
